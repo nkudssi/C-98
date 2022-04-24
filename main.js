@@ -6,7 +6,7 @@ Webcam.set({
     png_quality: 90
 });
 
-Webcam.attach(camera);
+
 
 var SpeechRecognition = window.webkitSpeechRecognition;
 var recognition = new SpeechRecognition();
@@ -20,9 +20,31 @@ recognition.onresult = function(event){
     var Content = event.results[0][0].transcript;
     document.getElementById("textbox").innerHTML = Content;
     console.log(Content);
-    if(Content == "take my selfie"){
+    if(Content == "Take my selfie."){
         console.log("taking selfie");
         speak();
     }
 
+}
+function take_snapshot(){
+    Webcam.snap(function(data_url){
+        document.getElementById("result").innerHTML = '<img id="selfieimg" src="'+data_url+'">';
+    });
+}
+function speak(){
+    var synth = window.speechSynthesis;
+    speak_data = "Taking your selfie in 5 seconds.";
+    var utterThis = new SpeechSynthesisUtterance(speak_data);
+    synth.speak(utterThis);
+    Webcam.attach(camera);
+    setTimeout(function(){
+        take_snapshot();
+        save();
+    }, 5000 );
+}
+function save(){
+    link = document.getElementById("link");
+    image = document.getElementById("selfieimg").src;
+    link.href = image;
+    link.click();
 }
